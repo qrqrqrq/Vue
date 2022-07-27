@@ -12,15 +12,13 @@
         <router-link
           :to="{
             name: 'xiangqing',
-            query: {
+            params: {
               id: m.id,
               title: m.title,
             },
           }"
           >{{ m.title }}
         </router-link>
-        <button @click="pushShow(m)">push查看</button>
-        <button @click="replaceShow(m)">replace查看</button>
       </li>
     </ul>
     <hr />
@@ -40,26 +38,6 @@ export default {
         { id: "004", title: "消息004" },
       ],
     };
-  },
-  methods: {
-    pushShow(m) {
-      this.$router.push({
-        name: "xiangqing",
-        query: {
-          id: m.id,
-          title: m.title,
-        },
-      });
-    },
-    replaceShow(m) {
-      this.$router.replace({
-        name: "xiangqing",
-        query: {
-          id: m.id,
-          title: m.title,
-        },
-      });
-    },
   },
 };
 </script>
