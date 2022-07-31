@@ -16,7 +16,7 @@ module.exports = defineConfig({
                 target: "http://localhost:5000",
                 pathRewrite: { "^/atguigu": "" },
                 // 用于支持websocket
-                ws: true,
+                ws: false,
                 // 用于控制请求头中host字段
                 changeOrigin: true,
             },
@@ -24,7 +24,7 @@ module.exports = defineConfig({
                 target: "http://localhost:5001",
                 pathRewrite: { "^/car": "" },
                 // 用于支持websocket
-                ws: true,
+                ws: false,
                 // 用于控制请求头中host字段
                 changeOrigin: true,
             },

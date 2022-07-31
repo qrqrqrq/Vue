@@ -1,53 +1,61 @@
 <template>
   <div>
-    <div class="row">
-      <TheBanner />
-    </div>
-    <div class="row">
-      <div class="col-xs-2 col-xs-offset-2">
-        <div class="list-group">
-          <!-- 原始html中我们使用a标签实现页面的跳转 -->
-          <!-- <a class="list-group-item active" href="./about.html">About</a>-->
-          <!-- <a class="list-group-item" href="./home.html">Home</a>  -->
-
-          <!-- vue中借助router-link实现路由的切换 -->
-          <router-link
-            replace
-            class="list-group-item"
-            active-class="active"
-            :to="{
-              name: 'guanyu',
-            }"
-          >
-            About
-          </router-link>
-          <router-link
-            replace
-            class="list-group-item"
-            active-class="active"
-            to="/home"
-          >
-            Home
-          </router-link>
-        </div>
-      </div>
-      <div class="col-xs-6">
-        <div class="panel">
-          <div class="panel-body">
-            <!-- 指定组件的呈现位置 -->
-            <router-view></router-view>
-          </div>
-        </div>
-      </div>
+    <button>原生的按钮</button>
+    <input type="text" />
+    <el-row>
+      <el-button>默认按钮</el-button>
+      <el-button type="primary">主要按钮</el-button>
+      <el-button type="success">成功按钮</el-button>
+      <el-button type="info">信息按钮</el-button>
+      <el-button type="warning">警告按钮</el-button>
+      <el-button type="danger">危险按钮</el-button>
+    </el-row>
+    <div class="block">
+      <span class="demonstration">默认</span>
+      <el-date-picker v-model="value1" type="date" placeholder="选择日期">
+      </el-date-picker>
     </div>
   </div>
 </template>
 
 <script>
-import TheBanner from "./components/TheBanner.vue";
 export default {
   name: "App",
-  components: { TheBanner },
+  data() {
+    return {
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+        shortcuts: [
+          {
+            text: "今天",
+            onClick(picker) {
+              picker.$emit("pick", new Date());
+            },
+          },
+          {
+            text: "昨天",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              picker.$emit("pick", date);
+            },
+          },
+          {
+            text: "一周前",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", date);
+            },
+          },
+        ],
+      },
+      value1: "",
+      value2: "",
+    };
+  },
 };
 </script>
 
