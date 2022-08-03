@@ -8,7 +8,9 @@
         <Like />
         <Floor />
         <Floor />
-        <Brand />
+        <Brand /> 
+        
+    
     </div>
 </template>
 
@@ -20,6 +22,8 @@ import Rank from "./Rank";
 import Like from "./Like";
 import Brand from "./Brand";
 import Floor from "./Floor";
+
+import { mapState } from "vuex";
 export default {
     name: "Home",
     components: {
@@ -30,6 +34,7 @@ export default {
         Brand,
         Floor,
     },
+    
 };
 </script>
 
