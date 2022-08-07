@@ -2,37 +2,61 @@
     <!-- 商品分类导航 -->
     <div class="type-nav">
         <div class="container">
-            <h2 class="all">全部商品分类</h2>
+            <div @mouseleave="leaveIndex">
+                <h2 class="all">全部商品分类</h2>
 
-            <div class="sort">
-                <div class="all-sort-list2">
-                    <div
-                        class="item"
-                        v-for="(c1,index) in categoryList"
-                        :key="c1.categoryId"
-                    >
-                        <h3>
-                            <a href="">{{ c1.categoryName }}</a>
-                        </h3>
-                        <div class="item-list clearfix">
-                            <div
-                            class="subitem"
-                            >
-                                <dl class="fore"  
-                                v-for="(c2,index) in c1.categoryChild"
-                                :key="c2.categoryId">
-                                    <dt>
-                                        <a href="">{{ c2.categoryName }}</a>
-                                    </dt>
-                                    <dd>
-                                        <em
-                                            v-for="c3 in c2.categoryChild"
-                                            :key="c3.categoryId"
-                                        >
-                                            <a href="">{{ c3.categoryName }}</a>
-                                        </em>
-                                    </dd>
-                                </dl>
+                <div class="sort">
+                    <!-- 利用事件委派+编程式导航实现路由的跳转与传递参数 -->
+                    <div class="all-sort-list2" @click="goSearch">
+                        <div
+                            class="item"
+                            v-for="(c1, index) in categoryList"
+                            :key="c1.categoryId"
+                            :class="{ cur: currentIndex == index }"
+                        >
+                            <h3 @mouseenter="changeIndex(index)">
+                                <a
+                                    :data-categoryName="c1.categoryName"
+                                    :data-category1Id="c1.categoryId"
+                                    >{{ c1.categoryName }}</a
+                                >
+                            </h3>
+                            <div class="item-list clearfix">
+                                <div class="subitem">
+                                    <dl
+                                        class="fore"
+                                        v-for="(c2, index) in c1.categoryChild"
+                                        :key="c2.categoryId"
+                                    >
+                                        <dt>
+                                            <a
+                                                :data-categoryName="
+                                                    c2.categoryName
+                                                "
+                                                :data-category2Id="
+                                                    c2.categoryId
+                                                "
+                                                >{{ c2.categoryName }}</a
+                                            >
+                                        </dt>
+                                        <dd>
+                                            <em
+                                                v-for="c3 in c2.categoryChild"
+                                                :key="c3.categoryId"
+                                            >
+                                                <a
+                                                    :data-categoryName="
+                                                        c3.categoryName
+                                                    "
+                                                    :data-category3Id="
+                                                        c3.categoryId
+                                                    "
+                                                    >{{ c3.categoryName }}</a
+                                                >
+                                            </em>
+                                        </dd>
+                                    </dl>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -54,8 +78,15 @@
 
 <script>
 import { mapState } from "vuex";
+import throttle from "lodash/throttle";
 export default {
     name: "TypeNav",
+    data() {
+        return {
+            // 存储用户鼠标移上哪个一级分类
+            currentIndex: -1,
+        };
+    },
 
     // 组件挂载完毕，向服务器发请求
     mounted() {
@@ -67,6 +98,45 @@ export default {
                 return state.home.categoryList;
             },
         }),
+    },
+    methods: {
+        // 鼠标进入修改响应式数据currentIndex的值
+        // changeIndex(index) {
+        //     // index:鼠标移上某个一级分类的元素的索引值
+        //     this.currentIndex = index;
+        // },
+
+        changeIndex: throttle(function (index) {
+            this.currentIndex = index;
+        }, 50),
+        // 一级分类鼠标移出的事件回调
+        leaveIndex() {
+            this.currentIndex = -1;
+        },
+        goSearch(event) {
+            //event.target:获取到的是出发事件的元素(div、h3、a、em、dt、dl)
+            let node = event.target;
+            //给a标签添加自定义属性data-categoryName,全部的子标签当中只有a标签带有自定义属性，别的标签名字----dataset纯属扯淡
+            let { categoryname, category1id, category2id, category3id } =
+                node.dataset;
+            if (categoryname) {
+                // 整理路由跳转参数
+                let location = { name: "search" };
+                let query = { categoryName: categoryname };
+                // 一级二级三级分类的a标签
+                if (category1id) {
+                    query.category1Id = category1id;
+                } else if (category2id) {
+                    query.category2Id = category2id;
+                } else if (category3id) {
+                    query.category3Id = category3id;
+                }
+                // 整理完参数
+                location.query = query;
+                // 路由跳转
+                this.$router.push(location);
+            }
+        },
     },
 };
 </script>
@@ -186,6 +256,9 @@ export default {
                             display: block;
                         }
                     }
+                }
+                .cur {
+                    background-color: skyblue;
                 }
             }
         }
