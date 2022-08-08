@@ -2,65 +2,70 @@
     <!-- 商品分类导航 -->
     <div class="type-nav">
         <div class="container">
-            <div @mouseleave="leaveIndex">
+            <div @mouseleave="leaveIndex" @mouseenter="enterShow">
                 <h2 class="all">全部商品分类</h2>
-
-                <div class="sort">
-                    <!-- 利用事件委派+编程式导航实现路由的跳转与传递参数 -->
-                    <div class="all-sort-list2" @click="goSearch">
-                        <div
-                            class="item"
-                            v-for="(c1, index) in categoryList"
-                            :key="c1.categoryId"
-                            :class="{ cur: currentIndex == index }"
-                        >
-                            <h3 @mouseenter="changeIndex(index)">
-                                <a
-                                    :data-categoryName="c1.categoryName"
-                                    :data-category1Id="c1.categoryId"
-                                    >{{ c1.categoryName }}</a
-                                >
-                            </h3>
-                            <div class="item-list clearfix">
-                                <div class="subitem">
-                                    <dl
-                                        class="fore"
-                                        v-for="(c2, index) in c1.categoryChild"
-                                        :key="c2.categoryId"
+                <transition name="sort">
+                    <div class="sort" v-show="show">
+                        <!-- 利用事件委派+编程式导航实现路由的跳转与传递参数 -->
+                        <div class="all-sort-list2" @click="goSearch">
+                            <div
+                                class="item"
+                                v-for="(c1, index) in categoryList"
+                                :key="c1.categoryId"
+                                :class="{ cur: currentIndex == index }"
+                            >
+                                <h3 @mouseenter="changeIndex(index)">
+                                    <a
+                                        :data-categoryName="c1.categoryName"
+                                        :data-category1Id="c1.categoryId"
+                                        >{{ c1.categoryName }}</a
                                     >
-                                        <dt>
-                                            <a
-                                                :data-categoryName="
-                                                    c2.categoryName
-                                                "
-                                                :data-category2Id="
-                                                    c2.categoryId
-                                                "
-                                                >{{ c2.categoryName }}</a
-                                            >
-                                        </dt>
-                                        <dd>
-                                            <em
-                                                v-for="c3 in c2.categoryChild"
-                                                :key="c3.categoryId"
-                                            >
+                                </h3>
+                                <div class="item-list clearfix">
+                                    <div class="subitem">
+                                        <dl
+                                            class="fore"
+                                            v-for="(
+                                                c2, index
+                                            ) in c1.categoryChild"
+                                            :key="c2.categoryId"
+                                        >
+                                            <dt>
                                                 <a
                                                     :data-categoryName="
-                                                        c3.categoryName
+                                                        c2.categoryName
                                                     "
-                                                    :data-category3Id="
-                                                        c3.categoryId
+                                                    :data-category2Id="
+                                                        c2.categoryId
                                                     "
-                                                    >{{ c3.categoryName }}</a
+                                                    >{{ c2.categoryName }}</a
                                                 >
-                                            </em>
-                                        </dd>
-                                    </dl>
+                                            </dt>
+                                            <dd>
+                                                <em
+                                                    v-for="c3 in c2.categoryChild"
+                                                    :key="c3.categoryId"
+                                                >
+                                                    <a
+                                                        :data-categoryName="
+                                                            c3.categoryName
+                                                        "
+                                                        :data-category3Id="
+                                                            c3.categoryId
+                                                        "
+                                                        >{{
+                                                            c3.categoryName
+                                                        }}</a
+                                                    >
+                                                </em>
+                                            </dd>
+                                        </dl>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </transition>
             </div>
             <nav class="nav">
                 <a href="###">服装城</a>
@@ -85,12 +90,18 @@ export default {
         return {
             // 存储用户鼠标移上哪个一级分类
             currentIndex: -1,
+            show: true,
         };
     },
 
     // 组件挂载完毕，向服务器发请求
     mounted() {
-        this.$store.dispatch("categoryList");
+        // this.$store.dispatch("categoryList");、--->写到了App.vue里
+        // 当组件挂载完毕，show变为false
+        // 如果不是Home路由组件，将typeNav隐藏
+        if (this.$route.path != "/home") {
+            this.show = false;
+        }
     },
     computed: {
         ...mapState({
@@ -109,8 +120,12 @@ export default {
         changeIndex: throttle(function (index) {
             this.currentIndex = index;
         }, 50),
-        // 一级分类鼠标移出的事件回调
+        // 一级分类鼠标移出的事件回调及
+        // 在search页面，当鼠标移出时，让商品分类列表进行隐藏
         leaveIndex() {
+            if (this.$route.path != "/home") {
+                this.show = false;
+            }
             this.currentIndex = -1;
         },
         goSearch(event) {
@@ -132,10 +147,19 @@ export default {
                     query.category3Id = category3id;
                 }
                 // 整理完参数
-                location.query = query;
-                // 路由跳转
-                this.$router.push(location);
+                // 判断：如果路由跳转时候，带有params参数，顺带传递过去
+                if (this.$route.params) {
+                    location.params = this.$route.params;
+                    // 动态给location配置对象添加query属性
+                    location.query = query;
+                    // 路由跳转
+                    this.$router.push(location);
+                }
             }
+        },
+        // 在search页面，当鼠标移入时，让商品分类列表进行展示
+        enterShow() {
+            this.show = true;
         },
     },
 };
@@ -261,6 +285,18 @@ export default {
                     background-color: skyblue;
                 }
             }
+        }
+        // 过渡动画的样式
+        // 动画进入的起点
+        .sort-enter {
+            height: 0px;
+        }
+        // 进入的终点
+        .sort-enter-to {
+            height: 461px;
+        }
+        .sort-enter-active {
+            transition: all 0.3s linear;
         }
     }
 }

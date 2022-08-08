@@ -17,6 +17,8 @@ import store from '@/store'
 import TypeNav from '@/components/TypeNav'
 Vue.component('TypeNav', TypeNav);
 
+//引入MockServe.js里的数据
+import '@/mook/mockServe';
 Vue.config.productionTip = false
 
 new Vue({

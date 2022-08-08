@@ -64,16 +64,17 @@ export default {
     methods: {
         // 搜索按钮的回调函数，需要向search、路由进行跳转
         goSearch() {
-            // 路由传递参数
-            this.$router.push({
-                name: "search",
-                params: {
-                    keyword: this.keyword,
-                },
-                query: {
-                    k: this.keyword.toUpperCase(),
-                },
-            });
+            // 路由传递参数,如果有query参数，也带着
+            if (this.$route.query) {
+                let location = {
+                    name: "search",
+                    params: {
+                        keyword: this.keyword || undefined
+                    },
+                };
+                location.query = this.$route.query;
+                this.$router.push(location);
+            }
         },
     },
 };
