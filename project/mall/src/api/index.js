@@ -13,3 +13,6 @@ export const reqCategoryList = () =>
 
 // 获取home首页轮播图
 export const reqGetBannerList = () => mockRequests.get('/banner');
+
+// 获取floor数据
+export const reqFloorList = () => mockRequests.get('/floor');

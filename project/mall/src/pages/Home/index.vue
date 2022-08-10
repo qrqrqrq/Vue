@@ -6,8 +6,8 @@
         <Recommend />
         <Rank />
         <Like />
-        <Floor />
-        <Floor />
+        <!-- 父组件Home要向子组件Floor传递数据 -->
+        <Floor v-for="(floor, index) in floorList" :key="floor.id" :list="floor"/>
         <Brand /> 
         
     
@@ -34,6 +34,15 @@ export default {
         Brand,
         Floor,
     },
+    mounted() {
+        // 派发action，获取floor组件的数据
+        this.$store.dispatch("getFloorList");
+    },
+    computed:{
+        ...mapState({
+            floorList:state=>state.home.floorList
+        })
+    }
     
 };
 </script>

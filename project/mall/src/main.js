@@ -11,12 +11,19 @@ import router from './router/index'
 Vue.use(VueRouter);
 
 // 引入store
-import store from '@/store'
+import store from '@/store';
+
+// 引入swiper样式
+import "swiper/css/swiper.css";
 
 // 三级联动---全局组件
 import TypeNav from '@/components/TypeNav'
 Vue.component('TypeNav', TypeNav);
 
+// 轮播图---全局组件
+import Carousel from '@/components/Carousel';
+
+Vue.component('Carousel', Carousel);
 //引入MockServe.js里的数据
 import '@/mook/mockServe';
 Vue.config.productionTip = false
